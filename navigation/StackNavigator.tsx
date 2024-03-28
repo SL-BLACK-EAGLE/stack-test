@@ -70,7 +70,7 @@ const StackNavigator = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const token = await AsyncStorage.getItem("authToken");
+        const token = await AsyncStorage.getItem("auth_token");
         setIsLogged(!!token);
         setIsLoaded(true);
       } catch (error) {

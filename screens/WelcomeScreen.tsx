@@ -1,11 +1,25 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingScreen from "./LoadingScreen";
 
 
 const WelcomeScreen = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const token = await AsyncStorage.getItem("auth_token");
+      if (token !== null) {
+        navigation.navigate("Main");
+      } 
+    };
+    checkLogin();
+  }, []);
+
+
   return (
     <SafeAreaView className="flex-1 gap-5 items-center justify-center">
       

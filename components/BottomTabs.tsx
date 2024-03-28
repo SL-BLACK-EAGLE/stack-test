@@ -6,6 +6,8 @@ import ProductScreen from "../screens/ProductScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 const Tab = createBottomTabNavigator();
+
+
 const BottomTabs = () => {
   return (
     <Tab.Navigator>

@@ -22,8 +22,10 @@ const LoginScreen = () => {
   useEffect(() => {
     const checkLogin = async () => {
       const token = await AsyncStorage.getItem("auth_token");
-      if (token) {
+      if (token !== null) {
         navigation.navigate("Main");
+        setIsLoaded(true);
+      } else {
         setIsLoaded(true);
       }
     };
@@ -40,10 +42,7 @@ const LoginScreen = () => {
       console.log(response);
 
       if (response.auth_token) {
-        await AsyncStorage.setItem("auth_token", response.auth_token);
-        await AsyncStorage.setItem("username", username);
-        await AsyncStorage.setItem("date_created", response.date_created);
-      
+    
         Alert.alert("Success", "Logged in successfully");
         navigation.navigate("Main");
       } else {
