@@ -1,55 +1,47 @@
-import { SafeAreaView, Text } from "react-native";
-import React, { useEffect, useState } from "react";
-import { getToken } from "../utils/auth";
-import { fetchProducts } from "../api/fetchProducts";
-import LoadingScreen from "./LoadingScreen";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import React, { useState } from "react";
+import Icon from "react-native-vector-icons/FontAwesome";
+import AllProducts from "../components/AllProducts";
 
 const HomeScreen = () => {
-  const [token, setToken] = useState<string>("");
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-
-    // Get the auth token from the AsyncStorage
-    const loadToken = async () => {
-      try {
-        const tokenId = await getToken();
-        if (tokenId) {
-          setToken(tokenId);
-        } else {
-          console.log("Token not found in async storage");
-          return null;
-        }
-      } catch (error) {
-        console.error("Failed to load token:", error);
-      }
-    };
-    loadToken();
-
-    const loadProduct = async () => {
-      try {
-        const retrieveProducts = await fetchProducts(token);
-        console.log(retrieveProducts);
-        setIsLoaded(true);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      }
-    };
-    
-    if (token) {
-      loadProduct();
-    } else {
-      loadToken();
-    }
-  }, [token]);
-
-  if (!isLoaded) {
-    return <LoadingScreen />;
-  }
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <SafeAreaView>
-      <Text>{token}</Text>
+    <SafeAreaView className="flex-1 bg-white">
+      <View className="p-2">
+        <Text>Home Page Still Under Construction</Text>
+
+        {isLoading ? (
+          <View className="justify-center items-center flex-1 flex mt-10">
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <ScrollView>
+            {/*  Title section */}
+            <View>
+              <View className="flex-row flex justify-between items-center mt-8 px-4">
+                <Text className="text-emerald-700 text-[28px] font-bold">
+                  Product List
+                </Text>
+                <TouchableOpacity className="flex-row flex justify-between items-center space-x-2">
+                  <Text className="text-gray-500 text-xl">All</Text>
+                  <Icon name="long-arrow-right" size={25} color="gray" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View className="px-4 mt-8 flex-row items-center justify-evenly flex-wrap">
+              <AllProducts />
+            </View>
+          </ScrollView>
+        )}
+      </View>
     </SafeAreaView>
   );
 };

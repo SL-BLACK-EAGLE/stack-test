@@ -8,7 +8,7 @@ import WelcomeScreen from "../screens/WelcomeScreen";
 import HomeScreen from "../screens/HomeScreen";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
-import ProductScreen from "../screens/ProductScreen";
+import ProductScreen from "../screens/SingleProductScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 
 const StackNavigator = () => {
@@ -101,6 +101,11 @@ const StackNavigator = () => {
           name="Main"
           component={BottomTabs}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Product"
+          component={ProductScreen}
+          options={{headerShown: false}}
         />
       </Stack.Navigator>
     </NavigationContainer>
