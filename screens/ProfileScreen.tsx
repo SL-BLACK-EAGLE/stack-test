@@ -1,4 +1,4 @@
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Alert, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
@@ -29,6 +29,7 @@ const ProfileScreen = () => {
     await AsyncStorage.removeItem("username");
     await AsyncStorage.removeItem("date_created");
     setUsername("");
+    Alert.alert("Logout Successful");
     navigation.navigate("Welcome");
   };
   const DateFromString = new Date(dateCreated);
