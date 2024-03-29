@@ -10,6 +10,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import ProductScreen from "../screens/SingleProductScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import ManageProductScreen from "../screens/ManageProductScreen";
 
 const StackNavigator = () => {
   const [isLogged, setIsLogged] = useState(false);
@@ -26,6 +27,7 @@ const StackNavigator = () => {
           component={HomeScreen}
           options={{
             tabBarLabel: "Home",
+            tabBarLabelStyle: { fontSize: 15 },
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialIcon name="home" color="blue" size={30} />
@@ -40,6 +42,7 @@ const StackNavigator = () => {
           component={ProfileScreen}
           options={{
             tabBarLabel: "Profile",
+            tabBarLabelStyle: { fontSize: 15 },
             tabBarIcon: ({ focused }) =>
               focused ? (
                 <MaterialIcon name="person" color="blue" size={30} />
@@ -50,15 +53,16 @@ const StackNavigator = () => {
           }}
         />
         <Tab.Screen
-          name="Cart"
-          component={ProductScreen}
+          name="MangeProducts"
+          component={ManageProductScreen}
           options={{
-            tabBarLabel: "Cart",
+            tabBarLabel: "Mange Products",
+            tabBarLabelStyle: { fontSize: 15 },
             tabBarIcon: ({ focused }) =>
               focused ? (
-                <MaterialIcon name="shopping-cart" color="blue" size={30} />
+                <MaterialIcon name="task" color="blue" size={30} />
               ) : (
-                <MaterialIcon name="shopping-cart" color="black" size={30} />
+                <MaterialIcon name="task" color="black" size={30} />
               ),
             headerShown: false,
           }}

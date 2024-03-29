@@ -16,7 +16,7 @@ const HomeScreen = () => {
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="p-2">
-        <Text>Home Page Still Under Construction</Text>
+        <Text className="text-center text-3xl font-bold">Product Home</Text>
 
         {isLoading ? (
           <View className="justify-center items-center flex-1 flex mt-10">

@@ -5,102 +5,104 @@ import ItemCardContainer from "./ItemCardContainer";
 import { fetchProducts } from "../api/fetchProducts";
 import { getToken } from "../utils/auth";
 import LoadingScreen from "../screens/LoadingScreen";
-import { storeDataToDB } from "../lib/storeData";
+import { Data, MachineTypes, Manufacturers, Oems } from "../types";
+import { storeDataToDB } from "../api/storeData";
 
-interface Data {
-    skuid: number;
-    skunumber: string;
-    skuprice: number;
-    skuenabled: boolean;
-    skuqtyonorder: number;
-    skuavailableindays: number;
-    skuimageurl: string;
-    skuweight: number;
-    skuavailableitems: number;
-    skulastmodified: string;
-    skucreated: string;
-    skuretailprice: number;
-    skufeatures: string;
-    skuname_enGB: string;
-    skushortdescription_enGB: string;
-    skudescription_enGB: string;
-    oems: {
-      name: string;
-      partnumbers: string;
-      keywords: string;
-    }[];
-    machineTypes: {
-      name: string;
-      description: string;
-      model: string;
-    }[];
-    manufacturers: {
-      name: string;
-      partnumbers: string;
-      keywords: string;
-    }[];
-    skunumbersonparts: string;
-    skualtcode: string;
-    skupath: string;
-  }
+import * as SQLite from "expo-sqlite";
+
+// Initialize the SQLite database
+const db = SQLite.openDatabase("stackstore.db");
 
 const AllProducts = () => {
-  const [mainData, setMainData] = useState([]);
+  const [mainData, setMainData] = useState<Data[]>([]);
+  const [oemsData, setOemsData] = useState<Oems[]>([]);
+  const [machineTypesData, setMachineTypesData] = useState<MachineTypes[]>([]);
+  const [manufacturersData, setManufacturersData] = useState<Manufacturers[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [token, setToken] = useState<string>("");
 
   useEffect(() => {
-    // Get the auth token from the AsyncStorage
-    const loadToken = async () => {
-      try {
-        const tokenId = await getToken();
-        if (tokenId) {
-          setToken(tokenId);
-        } else {
-          console.log("Token not found in async storage");
-          return null;
-        }
-      } catch (error) {
-        console.error("Failed to load token:", error);
+
+    const getProducts = async () => {
+      db.transaction((tx) => {
+      
+        tx.executeSql(
+          "SELECT * FROM products;",
+          [],
+          (_, results) => {
+            const len = results.rows.length;
+            if (len > 0) {
+              setMainData(results.rows._array);
+              setIsLoading(false);
+              
+            }
+          },
+          (_, error) => {
+            console.log("error", error);
+          }
+        );
+
+        tx.executeSql(
+          "SELECT * FROM oems;",
+          [],
+          (_, results) => {
+            const len = results.rows.length;
+            if (len > 0) {
+              setOemsData(results.rows._array);
+              setIsLoading(false);
+              
+            }
+          },
+          (_, error) => {
+            console.log("error", error);
+          }
+        );
+
+        tx.executeSql(
+          "SELECT * FROM machineTypes;",
+          [],
+          (_, results) => {
+            const len = results.rows.length;
+            if (len > 0) {
+              setMachineTypesData(results.rows._array);
+              setIsLoading(false);
+              
+            }
+          },
+          (_, error) => {
+            console.log("error", error);
+          }
+        );
+
+        tx.executeSql(
+          "SELECT * FROM Manufacturers;",
+          [],
+          (_, results) => {
+            const len = results.rows.length;
+            if (len > 0) {
+              setManufacturersData(results.rows._array);
+              setIsLoading(false);
+              
+            }
+          },
+          (_, error) => {
+            console.log("error", error);
+          }
+        );
       }
-    };
-    loadToken();
-
-    const loadProduct = async () => {
-      try {
-        const retrieveProducts = await fetchProducts(token);
-        // console.log(retrieveProducts);
-        setMainData(retrieveProducts);
-        setIsLoading(true);
-
-        const storedata = storeDataToDB(retrieveProducts);
-        console.log(storedata);
-        
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-      }
-    };
-
-    if (token) {
-      loadProduct();
-    } else {
-      loadToken();
+      );
     }
-  }, [token]);
-
-  useEffect(() => {
-   
-  
-    // ... rest of your code ...
+    getProducts();
   }, []);
 
-  if (!isLoading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
   return (
     <>
       {mainData?.length > 0 ? (
+        
         <>
           {mainData?.map((data: Data, index) => (
             <ItemCardContainer
@@ -113,6 +115,9 @@ const AllProducts = () => {
               title={data?.skuname_enGB}
               availableItems={data?.skuavailableitems}
               data={data}
+              oems={oemsData}
+              machineTypes={machineTypesData}
+              manufacturers={manufacturersData}
             />
           ))}
         </>
@@ -123,6 +128,7 @@ const AllProducts = () => {
             <Text className="text-gray-500 text-xl font-semibold">
               Opps...No data found
             </Text>
+          
           </View>
         </>
       )}

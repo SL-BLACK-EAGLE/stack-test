@@ -60,13 +60,8 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white items-center">
-      <View>
-        <Image
-          className="w-44 h-24"
-          source={{
-            uri: "https://assets.stickpng.com/thumbs/6160562276000b00045a7d97.png",
-          }}
-        />
+      <View className="mt-10">
+       <Text className="text-4xl font-bold text-center">Stack Technologies</Text>
       </View>
       <KeyboardAvoidingView>
         <View className="items-center">

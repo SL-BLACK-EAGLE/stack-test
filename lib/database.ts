@@ -1,52 +1,23 @@
 import * as SQLite from "expo-sqlite";
+import { Data, MachineTypes, Manufacturers, Oems, Products } from "../types";
 
 // Initialize the SQLite database
 const db = SQLite.openDatabase("stackstore.db");
 
-interface Data {
-    skuid: number;
-    skunumber: string;
-    skuprice: number;
-    skuenabled: boolean;
-    skuqtyonorder: number;
-    skuavailableindays: number;
-    skuimageurl: string;
-    skuweight: number;
-    skuavailableitems: number;
-    skulastmodified: string;
-    skucreated: string;
-    skuretailprice: number;
-    skufeatures: string;
-    skuname_enGB: string;
-    skushortdescription_enGB: string;
-    skudescription_enGB: string;
-    skunumbersonparts: string;
-    skualtcode: string;
-    skupath: string;
-    oems: {
-        name: string;
-        partnumbers: string;
-        keywords: string;
-    }[];
-    machineTypes: {
-        name: string;
-        description: string;
-        model: string;
-    }[];
-    manufacturers: {
-        name: string;
-        partnumbers: string;
-        keywords: string;
-    }[];
 
-}
-// Create a table to store product data
-const createTable = () => {
+// Drop the table if it exists
+export const dropTable = () => {
     db.transaction((tx) => {
-        // tx.executeSql(`DROP TABLE IF EXISTS products;`);
-        // tx.executeSql(`DROP TABLE IF EXISTS oems;`);
-        // tx.executeSql(`DROP TABLE IF EXISTS machineTypes;`);
-        // tx.executeSql(`DROP TABLE IF EXISTS manufacturers;`);
+        tx.executeSql(`DROP TABLE IF EXISTS products;`);
+        tx.executeSql(`DROP TABLE IF EXISTS oems;`);
+        tx.executeSql(`DROP TABLE IF EXISTS machineTypes;`);
+        tx.executeSql(`DROP TABLE IF EXISTS manufacturers;`);
+    });
+};
+
+// Create a table to store product data
+export const createTable = () => {
+    db.transaction((tx) => {
         tx.executeSql(
             "SELECT name FROM sqlite_master WHERE type='table' AND name='products';",
             [],
@@ -202,7 +173,7 @@ const createTable = () => {
 };
 
 // Function to insert data into the database
-const insertData = (data: Data[]) => {
+export const insertData = (data: Data[]) => {
     db.transaction(tx => {
         data.forEach(item => {
             tx.executeSql(
@@ -264,7 +235,103 @@ const insertData = (data: Data[]) => {
     });
 }
 
-const readData = () => {
+export const insertProductData = (data: Products[]) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            data.forEach(item => {
+                tx.executeSql(
+                    `insert into products (
+            skuid, skunumber, skuprice, skuenabled, skuqtyonorder, skuavailableindays, 
+            skuimageurl, skuweight, skuavailableitems, skulastmodified, 
+            skucreated, skuretailprice, skufeatures, skuname_enGB, 
+            skushortdescription_enGB, skudescription_enGB, 
+            skunumbersonparts, skualtcode, skupath
+          ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                    [
+                        item.skuid, item.skunumber, item.skuprice, item.skuenabled ? 1 : 0, item.skuqtyonorder,
+                        item.skuavailableindays, item.skuimageurl, item.skuweight,
+                        item.skuavailableitems, item.skulastmodified, item.skucreated, item.skuretailprice,
+                        item.skufeatures, item.skuname_enGB, item.skushortdescription_enGB,
+                        item.skudescription_enGB, item.skunumbersonparts, item.skualtcode, item.skupath
+                    ],
+                    (_, result) => {
+                        console.log("oems inserted successfully");
+                        resolve(result);
+                    },
+                    (_, error) => {
+                        console.error("Error inserting oems:", error);
+                        reject(error);
+                    }
+                );
+            });
+        });
+    });
+}
+
+export const insertOemsData = (data: Oems[]) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            data.forEach(oem => {
+                tx.executeSql(
+                    `insert into oems (skuid, name, partnumbers, keywords) values (?, ?, ?, ?)`,
+                    [oem.skuid, oem.name, oem.partnumbers, oem.keywords],
+                    (_, result) => {
+                        console.log("oems inserted successfully");
+                        resolve(result);
+                    },
+                    (_, error) => {
+                        console.error("Error inserting oems:", error);
+                        reject(error);
+                    }
+                );
+            });
+        });
+    });
+}
+
+
+export const insertMachineTypesData = (data: MachineTypes[]) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            data.forEach(item => {
+                tx.executeSql(
+                    `insert into machineTypes (skuid, name, description, model) values (?, ?, ?, ?)`,
+                    [item.skuid, item.name, item.description, item.model],
+                    (_, result) => {
+                        console.log("machineType inserted successfully");
+                        resolve(result);
+                    },
+                    (_, error) => {
+                        console.error("Error inserting machineType:", error);
+                        reject(error);
+                    }
+                );
+            });
+        });
+    });
+}
+export const insertManufacturersData = (data: Manufacturers[]) => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            data.forEach(item => {
+                tx.executeSql(
+                    `insert into manufacturers (skuid, name, partnumbers, keywords) values (?, ?, ?, ?)`,
+                    [item.skuid, item.name, item.partnumbers, item.keywords],
+                    (_, result) => {
+                        console.log("manufacturer inserted successfully");
+                        resolve(result);
+                    },
+                    (_, error) => {
+                        console.error("Error inserting manufacturer:", error);
+                        reject(error);
+                    }
+                );
+            });
+        });
+    });
+}
+
+export const readData = () => {
     db.transaction(tx => {
         tx.executeSql(
             `select * from products`,
@@ -312,12 +379,6 @@ const readData = () => {
     });
 }
 
-// Function to store fetched data into the database
-export const storeDataToDB = (data: Data[]) => {
-    createTable(); // Create the table if it doesn't exist
 
-    // Insert each product into the database
-    insertData(data);
-    readData();
-};
+
 

@@ -6,17 +6,46 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import LoadingScreen from "./LoadingScreen";
 
 interface ItemScreenProps {
   route?: any;
 }
 
 const ProductScreen = ({ route }: ItemScreenProps) => {
-  const data = route?.params?.param;
   const navigation = useNavigation();
+  const [isLoaded, setIsLoaded] = useState(false);
+  const data = route?.params?.param;
+  const oems = route?.params?.oems;
+  const machineTypes = route?.params?.machineTypes;
+  const manufacturers = route?.params?.manufacturers;
+
+  const productOems = oems.filter((oem) => oem.skuid === data.skuid);
+  const productMachineTypes = machineTypes.filter(
+    (machineType) => machineType.skuid === data.skuid
+  );
+  const dataManufacturers = manufacturers.filter(
+    (manufacturer) => manufacturer.skuid === data.skuid
+  );
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoaded(true);
+    }
+    , 200);
+  }, []);
+
+  if (!isLoaded) {
+    return <LoadingScreen />;
+  }
+  
+ 
+  console.log(dataManufacturers);
+
+
+  
   return (
     <SafeAreaView className="flex-1 bg-white relative">
       <ScrollView className="flex-1 px-4 py-6 gap-y-4">
@@ -104,8 +133,8 @@ const ProductScreen = ({ route }: ItemScreenProps) => {
           <Text>Skudescription_enGB: {data.skudescription_enGB}</Text>
           {/* Render OEMs */}
           <Text>OEMs:</Text>
-          {data.oems.map((oem, index) => (
-            <View key={index}>
+          {productOems?.map((oem) => (
+            <View key={oem.id}>
               <Text>Name: {oem.name}</Text>
               <Text>Part Numbers: {oem.partnumbers}</Text>
               <Text>Keywords: {oem.keywords}</Text>
@@ -113,28 +142,29 @@ const ProductScreen = ({ route }: ItemScreenProps) => {
           ))}
           {/* Render Machine Types */}
           <Text>Machine Types:</Text>
-          {data.machineTypes.map((machineType, index) => (
-            <View key={index}>
-              <Text>Name: {machineType.name}</Text>
-              <Text>Description: {machineType.description}</Text>
-              <Text>Model: {machineType.model}</Text>
+          {productMachineTypes?.map((machinetypes) => (
+            <View key={machinetypes.id}>
+              <Text>Name: {machinetypes.name}</Text>
+              <Text>Description: {machinetypes.description}</Text>
+              <Text>Model: {machinetypes.model}</Text>
             </View>
           ))}
           {/* Render Manufacturers */}
           <Text>Manufacturers:</Text>
-          {data.manufacturers.map((manufacturer, index) => (
-            <View key={index}>
-              <Text>Name: {manufacturer.name}</Text>
-              <Text>Part Numbers: {manufacturer.partnumbers}</Text>
-              <Text>Keywords: {manufacturer.keywords}</Text>
+          {dataManufacturers?.map((dataManufacture) => (
+            <View key={dataManufacture.id}>
+              <Text>Name: {dataManufacture.name}</Text>
+              <Text>Part Numbers: {dataManufacture.partnumbers}</Text>
+              <Text>Keywords: {dataManufacture.keywords}</Text>
             </View>
           ))}
+
           <Text>Skunumbersonparts: {data.skunumbersonparts}</Text>
           <Text>Skualtcode: {data.skualtcode}</Text>
 
           <View className="mt-4 px-4 py-4 rounded-lg bg-[#06B2BE] items-center justify-center mb-12">
             <Text className="text-3xl font-semibold uppercase tracking-wider text-gray-100">
-              Book Now
+              Order Now
             </Text>
           </View>
         </View>
